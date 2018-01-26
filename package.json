@@ -1,8 +1,8 @@
 {
-  "name": "study-js-binary-csrf-201801",
+  "name": "study-js-typedarray-blob-201801",
   "version": "1.0.0",
   "description": "Study for JavaScript Buffer/ArrayBuffer/Blob/File APIs and HTML5 multipart CSRF exercise at Jan 2018.",
-  "main": "index.js",
+  "main": "src/mocha-node.js",
   "scripts": {
     "lint": "standard src/**/*.js",
     "build": "webpack",
