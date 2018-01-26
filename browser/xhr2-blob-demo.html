@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>XHR2 + Blob demo</title>
+  <meta name="author" content="sakamoto@securesky-tech.com">
+</head>
+<body>
+  <h1>XHR2 + Blob demo</h1>
+
+  <h2>ArrayBufferで受信し、DataURLで表示するデモ</h2>
+  <div>
+    <button type="button" onclick="xhr2ArrayBufferDemo()">click</button><br>
+    サイズ : <span id="xhr2ArrayBufferDemo-size"></span><br>
+    画像 : <img src="" id="xhr2ArrayBufferDemo-img">
+  </div>
+
+  <h2>Blobで受信し、DataURLで表示するデモ</h2>
+  <div>
+    <button type="button" onclick="xhr2BlobDemo()">click</button><br>
+    画像 : <img src="" id="xhr2BlobDemo-img">
+  </div>
+
+  <h2>FormDataをdummy.txtに送信するデモ</h2>
+  <button type="button" onclick="xhr2SendFormDataDemo()">click</button><br>
+  <p>(ローカルHTTPプロキシを通して、実際にどんなHTTPリクエストが送信されるか確認してみてください)</p>
+
+  <h2>既存のフォームのFormDataを使ってdummy.txtに送信するデモ</h2>
+  <form>
+    <input type="text" name="pstr1" value="Hello, World"><br>
+    <input type="text" name="pstr2" value="こんにちは、日本語"><br>
+    <input type="checkbox" name="cb1" value="1" checked>チェック済み<br>
+    <input type="radio" name="rb1" value="1">ラジオ1-1<br>
+    <input type="radio" name="rb1" value="2" checked>ラジオ1-2<br>
+    <input type="radio" name="rb1" value="3">ラジオ1-3<br>
+    <input type="submit" onclick="return xhr2SendHtmlFormDataDemo(this.form);">
+  </form>
+  <p><a href="https://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-xmlhttprequest-send" target="_blank">XHR2の仕様で、FormDataはmultipart/form-dataとしてしか送信できない。</a></p>
+  <p>(ローカルHTTPプロキシを通して、実際にどんなHTTPリクエストが送信されるか確認してみてください)</p>
+
+  <h2>Binary Blobをdummy.txtに送信するデモ</h2>
+  <button type="button" onclick="xhr2SendBlobDemo()">click</button><br>
+  <p>(ローカルHTTPプロキシを通して、実際にどんなHTTPリクエストが送信されるか確認してみてください)</p>
+
+  <h2>Binary ArrayBufferをdummy.txtに送信するデモ</h2>
+  <button type="button" onclick="xhr2SendArrayBufferDemo()">click</button><br>
+  <p>(ローカルHTTPプロキシを通して、実際にどんなHTTPリクエストが送信されるか確認してみてください)</p>
+
+  <h2>参考</h2>
+  <ul>
+      <li><a target="_blank" href="https://www.w3.org/TR/XMLHttpRequest2/">XMLHttpRequest Level 2</a></li>
+      <li><a target="_blank" href="https://developer.mozilla.org/ja/docs/Web/API/Blob">Blob - Web API インターフェイス | MDN</a></li>
+      <li><a target="_blank" href="https://developer.mozilla.org/ja/docs/Web/API/FileReader">FileReader - Web API インターフェイス | MDN</a></li>
+      <li><a target="_blank" href="https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest">XMLHttpRequest - Web API インターフェイス | MDN</a></li>
+      <li><a target="_blank" href="https://developer.mozilla.org/ja/docs/Web/Guide/Using_FormData_Objects">FormData オブジェクトの利用 - ウェブデベロッパーガイド | MDN</a></li>
+      <li><a target="_blank" href="https://developer.mozilla.org/ja/docs/Web/API/FormData/FormData">FormData() - Web API インターフェイス | MDN</a></li>
+      <li><a target="_blank" href="https://developer.mozilla.org/ja/docs/Web/API/FormData">FormData - Web API インターフェイス | MDN</a></li>
+      <li><a target="_blank" href="https://hakuhin.jp/js/file.html">JavaScriptプログラミング講座【Blob と File クラスについて】</a></li>
+      <li><a target="_blank" href="https://qiita.com/TypoScript/items/0d5b08cecf959b8b822c">File APIs(Blob, BlobURL, ArrayBuffer, FileReader) - Qiita</a></li>
+      <li><a target="_blank" href="https://www.html5rocks.com/ja/tutorials/file/xhr2/">XMLHttpRequest2 に関する新しいヒント - HTML5 Rocks</a></li>
+      <li><a target="_blank" href="http://labs.opentone.co.jp/?p=4303">HTML5におけるCSRF対策の注意事項 | Opentone Labs.</a></li>
+  </ul>
+
+<script>
+  function xhr2ArrayBufferDemo() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', './sample.png');
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = function (e) {
+      var uint8arr = new Uint8Array(this.response);
+      var sizeEl = document.querySelector('#xhr2ArrayBufferDemo-size');
+      sizeEl.textContent = uint8arr.length.toString();
+      var blob = new Blob([this.response], {type: 'image/png'});
+      var fr = new FileReader();
+      fr.onload = function (e) {
+        if (fr.error) {
+          alert(fr.error);
+          console.log(fr.error);
+        } else {
+          var imgEl = document.querySelector('img#xhr2ArrayBufferDemo-img');
+          imgEl.src = fr.result;
+        }
+      }
+      fr.readAsDataURL(blob)
+    }
+    xhr.send();
+  }
+  function xhr2BlobDemo() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', './sample.png');
+    xhr.responseType = 'blob';
+    xhr.onload = function (e) {
+      var blob = this.response;
+      var fr = new FileReader();
+      fr.onload = function (e) {
+        if (fr.error) {
+          alert(fr.error);
+          console.log(fr.error);
+        } else {
+          var imgEl = document.querySelector('img#xhr2BlobDemo-img');
+          imgEl.src = fr.result;
+        }
+      }
+      fr.readAsDataURL(blob)
+    }
+    xhr.send();
+  }
+  function xhr2SendFormDataDemo() {
+    var formData = new FormData();
+    formData.append('pstr0', 'Hello, World');
+    formData.append('pstr1', 'こんにちは、日本語');
+    formData.append('pint0', 123456);
+    formData.append('ptrue', true);
+    formData.append('pfalse', false);
+    formData.append('pnull', null);
+    var binblob = new Blob([new Uint8Array([0x00, 0x01, 0x02, 0x03, 0xEF, 0xFF])], {type: 'application/octet-stream'});
+    formData.append('binfile', binblob);
+    var xmlblob = new Blob(['<r><user><id>1</id><name>bob</name></user></r>'], {type: 'text/xml'});
+    formData.append('xmlfile', xmlblob);
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', './dummy.txt');
+    xhr.responseType = 'text';
+    xhr.onload = function (e) {
+      alert(this.responseText);
+    }
+    xhr.send(formData);
+  }
+  function xhr2SendHtmlFormDataDemo(formEl) {
+    var formData = new FormData(formEl);
+    formData.append('customstr', 'added');
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', './dummy.txt');
+    xhr.responseType = 'text';
+    xhr.onload = function (e) {
+      alert(this.responseText);
+    }
+    xhr.send(formData);
+    return false;
+  }
+  function xhr2SendBlobDemo() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', './dummy.txt');
+    xhr.responseType = 'text';
+    xhr.onload = function (e) {
+      alert(this.responseText);
+    }
+    // Blob を送る場合は、blob.type を元に自動でContent-Type リクエストヘッダーが送信される。
+    var binblob = new Blob([new Uint8Array([0x00, 0x01, 0x02, 0x03, 0xEF, 0xFF])], {type: 'application/octet-stream'});
+    xhr.send(binblob);
+  }
+  function xhr2SendArrayBufferDemo() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', './dummy.txt');
+    xhr.responseType = 'text';
+    xhr.onload = function (e) {
+      alert(this.responseText);
+    }
+    // ArrayBuffer を送る場合は、Content-Type リクエストヘッダーについては手動設定する必要がある。
+    // (設定しないと、Content-Type リクエストヘッダーが送信されない)
+    xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+    var uint8a = new Uint8Array([0x00, 0x01, 0x02, 0x03, 0xEF, 0xFF]);
+    xhr.send(uint8a);
+  }
+</script>
+</body>
+</html>
