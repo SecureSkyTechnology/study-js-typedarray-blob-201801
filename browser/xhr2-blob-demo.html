@@ -21,7 +21,7 @@
     画像 : <img src="" id="xhr2BlobDemo-img">
   </div>
 
-  <h2>FormDataをdummy.txtに送信するデモ</h2>
+  <h2>JavaScriptからBlobやFileオブジェクトを生成し、FormDataに含めてXHR2でdummy.txtに送信するデモ</h2>
   <button type="button" onclick="xhr2SendFormDataDemo()">click</button><br>
   <p>(ローカルHTTPプロキシを通して、実際にどんなHTTPリクエストが送信されるか確認してみてください)</p>
 
@@ -38,11 +38,15 @@
   <p><a href="https://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-xmlhttprequest-send" target="_blank">XHR2の仕様で、FormDataはmultipart/form-dataとしてしか送信できない。</a></p>
   <p>(ローカルHTTPプロキシを通して、実際にどんなHTTPリクエストが送信されるか確認してみてください)</p>
 
-  <h2>Binary Blobをdummy.txtに送信するデモ</h2>
+  <h2>Binary Blobをリクエストボディとしてdummy.txtに送信するデモ</h2>
   <button type="button" onclick="xhr2SendBlobDemo()">click</button><br>
   <p>(ローカルHTTPプロキシを通して、実際にどんなHTTPリクエストが送信されるか確認してみてください)</p>
 
-  <h2>Binary ArrayBufferをdummy.txtに送信するデモ</h2>
+  <h2>Fileをリクエストボディとしてdummy.txtに送信するデモ</h2>
+  <button type="button" onclick="xhr2SendFileDemo()">click</button><br>
+  <p>(ローカルHTTPプロキシを通して、実際にどんなHTTPリクエストが送信されるか確認してみてください)</p>
+
+  <h2>Binary ArrayBufferをリクエストボディとしてdummy.txtに送信するデモ</h2>
   <button type="button" onclick="xhr2SendArrayBufferDemo()">click</button><br>
   <p>(ローカルHTTPプロキシを通して、実際にどんなHTTPリクエストが送信されるか確認してみてください)</p>
 
@@ -50,6 +54,8 @@
   <ul>
       <li><a target="_blank" href="https://www.w3.org/TR/XMLHttpRequest2/">XMLHttpRequest Level 2</a></li>
       <li><a target="_blank" href="https://developer.mozilla.org/ja/docs/Web/API/Blob">Blob - Web API インターフェイス | MDN</a></li>
+      <li><a target="_blank" href="https://developer.mozilla.org/ja/docs/Web/API/File">File - Web API インターフェイス | MDN</a></li>
+      <li><a target="_blank" href="https://www.w3.org/TR/FileAPI/#file-constructor-params">The File Interface - 4.1.1 Constructor Parameters (File API, W3C Working Draft, 26 October 2017)</a></li>
       <li><a target="_blank" href="https://developer.mozilla.org/ja/docs/Web/API/FileReader">FileReader - Web API インターフェイス | MDN</a></li>
       <li><a target="_blank" href="https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest">XMLHttpRequest - Web API インターフェイス | MDN</a></li>
       <li><a target="_blank" href="https://developer.mozilla.org/ja/docs/Web/Guide/Using_FormData_Objects">FormData オブジェクトの利用 - ウェブデベロッパーガイド | MDN</a></li>
@@ -116,7 +122,9 @@
     var binblob = new Blob([new Uint8Array([0x00, 0x01, 0x02, 0x03, 0xEF, 0xFF])], {type: 'application/octet-stream'});
     formData.append('binfile', binblob);
     var xmlblob = new Blob(['<r><user><id>1</id><name>bob</name></user></r>'], {type: 'text/xml'});
-    formData.append('xmlfile', xmlblob);
+    // for File() constructors, see https://www.w3.org/TR/FileAPI/#file-constructor-params
+    var xmlfile = new File([xmlblob], 'blob_to_file.xml', {type: 'application/xml'});
+    formData.append('xmlfile', xmlfile);
     var xhr = new XMLHttpRequest();
     xhr.open('POST', './dummy.txt');
     xhr.responseType = 'text';
@@ -147,6 +155,17 @@
     // Blob を送る場合は、blob.type を元に自動でContent-Type リクエストヘッダーが送信される。
     var binblob = new Blob([new Uint8Array([0x00, 0x01, 0x02, 0x03, 0xEF, 0xFF])], {type: 'application/octet-stream'});
     xhr.send(binblob);
+  }
+  function xhr2SendFileDemo() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', './dummy.txt');
+    xhr.responseType = 'text';
+    xhr.onload = function (e) {
+      alert(this.responseText);
+    }
+    var binblob = new Blob([new Uint8Array([0x00, 0x01, 0x02, 0x03, 0xEF, 0xFF])], {type: 'application/octet-stream'});
+    var binfile = new File([binblob], 'testdata.bin', {type: 'text/plain'});
+    xhr.send(binfile);
   }
   function xhr2SendArrayBufferDemo() {
     var xhr = new XMLHttpRequest();
