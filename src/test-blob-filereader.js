@@ -1,5 +1,6 @@
 // Browser only
 const assert = require('assert')
+const bowser = require('bowser')
 
 // FileReader API を Promise化する。
 // refs : http://numb86-tech.hatenablog.com/entry/2017/04/02/212259
@@ -106,8 +107,13 @@ describe('Blob and FileReader API', function () {
     assert(file0.size === 7)
     return syncFileReadAsDataURL(file0).then((result) => {
       // 0x00, ..., 0x06 を Base64エンコードした DataURL が返ってくるはず。
-      // またデフォルトではtypeが空文字列となるため、MIMEのフィールドは空文字列になる。
-      assert(result === 'data:;base64,AAECAwQFBg==')
+      if (bowser.firefox) {
+        // DataURLでは、FirefoxではMIMEが application/octet-stream になった。
+        assert(result === 'data:application/octet-stream;base64,AAECAwQFBg==')
+      } else {
+        // デフォルトではtypeが空文字列となるため、MIMEのフィールドは空文字列になる。
+        assert(result === 'data:;base64,AAECAwQFBg==')
+      }
     })
   })
   it('Blob to File with options', function () {
