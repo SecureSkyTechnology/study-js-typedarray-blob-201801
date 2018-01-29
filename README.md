@@ -10,6 +10,9 @@ $ npm run build
 $ npm run test
 $ npm run start
 -> ブラウザで http://localhost:9000/ にアクセス
+
+webpackによる変更監視 & 即時ビルド:
+$ npm run build:w
 ```
 
 ## 勉強時のログ

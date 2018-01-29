@@ -11,6 +11,13 @@ module.exports = {
     path: __dirname,
     filename: '[name].js'
   },
+  // webpack-dev-server を使ってみたが、 http://localhost:9001/webpack-dev-server/ 以下でのメモリ上のビルドが反映されない？？？
+  // よくわからないので、一旦使うのを止めておく。
+  devServer: {
+    port: 9001,
+    progress: true,
+    contentBase: `${__dirname}/browser`
+  },
   module: {
     rules: [{
       test: /\.css$/,
