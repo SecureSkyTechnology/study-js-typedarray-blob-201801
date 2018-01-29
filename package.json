@@ -22,6 +22,8 @@
       "Blob",
       "File",
       "FileReader",
+      "TextEncoder",
+      "TextDecoder",
       "location",
       "window",
       "document",

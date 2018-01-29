@@ -16,6 +16,7 @@ mocha.setup('bdd')
 require('./test-mocha-demo')
 require('./test-typed-array')
 require('./test-blob-filereader')
+require('./test-encoding-api')
 $(function () {
   mocha.run()
 })
