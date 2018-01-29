@@ -9,6 +9,7 @@ function assertarr (a1, a2) {
 }
 
 describe('Encoding API', function () {
+  // refs : https://encoding.spec.whatwg.org/
   // refs : https://developer.mozilla.org/en-US/docs/Web/API/Encoding_API
   // refs : https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder
   // refs : https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder
